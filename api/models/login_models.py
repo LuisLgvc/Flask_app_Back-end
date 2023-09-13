@@ -8,7 +8,6 @@ class Messages:
         self.email = email
         self.password = password
 
-
     @classmethod
     def get_messages(cls, login_data):
         query = """SELECT USU.usuario, USU.email, USU.contraseña FROM discord.usuarios AS USU WHERE (USU.usuario = %s OR USU.email = %s) AND USU.contraseña = %s;"""
