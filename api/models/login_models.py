@@ -2,8 +2,9 @@ from ..database import DatabaseConnection
 
 from flask import jsonify
 
-class Messages:
-    def __init__(self, usuario = None, email = None, password = None):
+
+class Login:
+    def __init__(self, usuario=None, email=None, password=None):
         self.usuario = usuario
         self.email = email
         self.password = password
