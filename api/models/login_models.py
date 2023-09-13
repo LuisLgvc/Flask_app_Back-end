@@ -9,11 +9,11 @@ class Messages:
         self.password = password
 
     @classmethod
-    def get_messages(cls, login_data):
+    def login(cls, login_data):
         query = """SELECT USU.usuario, USU.email, USU.contraseña FROM discord.usuarios AS USU WHERE (USU.usuario = %s OR USU.email = %s) AND USU.contraseña = %s;"""
         params = (login_data.user, login_data.email, login_data.password)
-        responses = DatabaseConnection.fetch_all(query, params=params)
+        response = DatabaseConnection.fetch_all(query, params=params)
 
-        if responses is not None:
-            return responses
+        if response is not None:
+            return response
         return None
