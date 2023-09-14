@@ -1,19 +1,24 @@
 from ..database import DatabaseConnection
 
-from flask import jsonify
+from flask import jsonify, session
 
 
 class SignUp:
-    def __init__(self, name, lastname, username, email, password, fecha_nac, route_image):
-        self.name = name
-        self.lastname = lastname
-        self.username = username
-        self.email = email
-        self.password = password
-        self.fecha_nac = fecha_nac
-        self.route_image = route_image
+    def __init__(self, **kwargs):
+        self.name = kwargs.get('name', None)
+        self.lastname = kwargs.get('lastname', None)
+        self.username = kwargs.get('username', None)
+        self.email = kwargs.get('email', None)
+        self.password = kwargs.get('password', None)
+        self.date_of_birth = kwargs.get('date_of_birth', None)
+        self.route_img = kwargs.get('route_img', None)
 
-    def SignUp(cls, signup_data):
-        query = """INSERT INTO discord.usuarios (nombre, apellido, usuario, email, contraseña, fecha_nac, ruta_img_usu) VALUES (%s, %s, %s, %s, %s, %s, %s); """
-        params = (signup_data.nombre, signup_data.apellido, signup_data.usuario,
-                  signup_data.contraseña, signup_data.fecha_nac, signup_data.ruta_img)
+    @classmethod
+    def signup(cls, user):
+        query = """INSERT INTO discord.usuarios (nombre, apellido, usuario, email, contraseña, fecha_nac, ruta_img_usu) VALUES (%(name)s, %(lastname)s, %(username)s, %(email)s, %(password)s, %(date_of_birth)s, %(route_img)s);"""
+        params = user.__dict__
+        response = DatabaseConnection.execute_query(query, params=params)
+
+        if response is not None:
+            return True
+        return None
