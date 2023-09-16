@@ -2,7 +2,7 @@
 import mysql
 from database import DatabaseConnection
 
-class Servidor:
+class Server:
     def __init__(self, **kwargs):
         self.server_id = kwargs.get('server_id')
         self.name = kwargs.get('name')
@@ -25,89 +25,63 @@ class Servidor:
 
 #Logica de Servidor
 #Creacion de un nuevo Servidor 
+    @classmethod
+    def create_server(cls, server):
+        conn = DatabaseConnection.connect()
+        cursor = conn.cursor()
 
-@classmethod
-def crear_servidor(cls, servidor):
-        try:
-            conn = DatabaseConnection.connect() 
-            cursor = conn.cursor()
+        insert_query = "INSERT INTO servers (name, description) VALUES (%s, %s)"
+        values = (server.name, server.description)
 
-            insert_query = "INSERT INTO servidores (name, description, owner_id) VALUES (%s, %s, %s)"
-            values = (servidor.name, servidor.description, servidor.owner_id)
+        cursor.execute(insert_query, values)
+        conn.commit()
 
-            cursor.execute(insert_query, values)
-            conn.commit()
+        server_id = cursor.lastrowid
+        cursor.close()
+        conn.close()
 
-            servidor.server_id = cursor.lastrowid
+        return server_id
+#Obtener un Servidor 
+    @classmethod
+    def get_servers(cls):
+        conn = DatabaseConnection.connect()
+        cursor = conn.cursor(dictionary=True)
 
-            cursor.close()
-            conn.close()
+        select_query = "SELECT * FROM servers"
+        cursor.execute(select_query)
+        servers = cursor.fetchall()
 
-            return servidor 
-        except Exception as error:
-            print(f"Error al crear el servidor: {error}")
-            return None
+        cursor.close()
+        conn.close()
 
-#Obtener Servidor por id. 
+        return [cls(**server) for server in servers]
+#Actualizar un Servidor     
+    @classmethod
+    def update_server(cls, server_id, new_data):
+        conn = DatabaseConnection.connect()
+        cursor = conn.cursor()
 
-@classmethod
-def obtener_servidor_por_id(cls, server_id):
-        try:
-            conn = DatabaseConnection.connect()  
-            cursor = conn.cursor(dictionary=True)
+        update_query = "UPDATE servers SET name=%s, description=%s WHERE server_id=%s"
+        values = (new_data['name'], new_data['description'], server_id)
 
-            select_query = "SELECT * FROM servidores WHERE server_id = %s"
-            cursor.execute(select_query, (server_id,))
-            servidor = cursor.fetchone()
+        cursor.execute(update_query, values)
+        conn.commit()
 
-            cursor.close()
-            conn.close()
+        cursor.close()
+        conn.close()
 
-            if servidor:
-                return cls(**servidor) 
-            else:
-                return None
-        except Exception as error:
-            print(f"Error al obtener el servidor: {error}")
-            return None
-#Actualizar o Modificar un Servidor         
-@classmethod
-def actualizar_servidor(cls, servidor):
-        try:
-            conn = DatabaseConnection.connect()  
-            cursor = conn.cursor()
+        return True
+#Borrar un Servidor 
+    @classmethod
+    def delete_server(cls, server_id):
+        conn = DatabaseConnection.connect()
+        cursor = conn.cursor()
 
-            update_query = "UPDATE servidores SET name = %s, description = %s WHERE server_id = %s"
-            values = (servidor.name, servidor.description, servidor.server_id)
+        delete_query = "DELETE FROM servers WHERE server_id=%s"
+        cursor.execute(delete_query, (server_id,))
+        conn.commit()
 
-            cursor.execute(update_query, values)
-            conn.commit()
+        cursor.close()
+        conn.close()
 
-            cursor.close()
-            conn.close()
-
-            return True  
-        except Exception as error:
-            print(f"Error al actualizar el servidor: {error}")
-            return False
-        
-#Elimiar un Servidor
-@classmethod
-def eliminar_servidor(cls, server_id):
-        try:
-            conn = DatabaseConnection.connect() 
-            cursor = conn.cursor()
-
-            delete_query = "DELETE FROM servidores WHERE server_id = %s"
-            values = (server_id,)
-
-            cursor.execute(delete_query, values)
-            conn.commit()
-
-            cursor.close()
-            conn.close()
-
-            return True  
-        except Exception as error:
-            print(f"Error al eliminar el servidor: {error}")
-            return False 
+        return True
