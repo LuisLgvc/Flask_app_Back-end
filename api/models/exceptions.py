@@ -57,3 +57,26 @@ class ServerDeleteException(Exception):
 
     def get_response(self):
         return jsonify({"message": "Error al eliminar el servidor"}), 500       
+#Excepciones modelo Canales 
+lass ChannelNotFoundException(Exception):
+    def __init__(self, channel_id):
+        super().__init__(f"Canal con ID {channel_id} no encontrado.")
+        self.channel_id = channel_id
+
+
+class ChannelCreationException(Exception):
+    def __init__(self):
+        super().__init__("Error al crear el canal.")
+
+
+class ChannelUpdateException(Exception):
+    def __init__(self, channel_id):
+        super().__init__(f"Error al actualizar el canal con ID {channel_id}.")
+        self.channel_id = channel_id
+
+
+class ChannelDeletionException(Exception):
+    def __init__(self, channel_id):
+        super().__init__(f"Error al eliminar el canal con ID {channel_id}.")
+        self.channel_id = channel_id
+
