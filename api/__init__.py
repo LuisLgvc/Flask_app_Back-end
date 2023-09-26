@@ -28,7 +28,7 @@ def init_app():
 
     DatabaseConnection.set_config(app.config)
 
-    app.register_blueprint(messages_bp, url_prefix='/get_messages')
+    app.register_blueprint(messages_bp, url_prefix='/messages')
     
     app.register_blueprint(login_bp, url_prefix='/login')
 
