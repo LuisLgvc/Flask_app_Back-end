@@ -40,6 +40,11 @@ class DatabaseConnection:
         cursor.execute(query, params)
         
         return cursor.fetchone()
+
+    @classmethod
+    def last_row_id(cls):
+        cursor = cls.get_connection().cursor()
+        return cursor.lastrowid
     
     @classmethod
     def close_connection(cls):
