@@ -10,12 +10,13 @@ class LoginController():
         """Realiza el llamado al metodo para realizar el login"""
         data = request.json
         user = Login(
+            id_usuario=(0),
             email=data.get('email'),
             password=data.get('password')
         )
-
-        if Login.login(user):
-            return {"message": "Sesion iniciada"}, 200
+        response = Login.login(user)
+        if response:
+            return {"id_usuario": response}, 200
         else:
             return {"message": "Usuario o contraseña incorrectos"}, 401
 
