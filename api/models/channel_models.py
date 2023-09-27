@@ -7,7 +7,8 @@ class Channel:
         self.id_servidor = kwargs.get('id_servidor')
         self.nombre = kwargs.get('nombre')
         self.id_mensaje = kwargs.get('id_mensaje')
-        self.id_usuario = kwargs.get('id_usuario')
+        self.server_name = kwargs.get('server_name')
+        #self.id_usuario = kwargs.get('id_usuario')
 
     def serialize(self):
         # Método para serializar el objeto del canal a un diccionario
@@ -23,8 +24,8 @@ class Channel:
         conn = DatabaseConnection.get_connection()
         cursor = conn.cursor()
 
-        insert_query = """INSERT INTO discord.canal (nombre, id_servidor, id_mensaje, id_usuario) VALUES (%s, %s, %s, %s);"""
-        values = (channel.nombre, channel.id_servidor, channel.id_mensaje, channel.id_usuario)
+        insert_query = """INSERT INTO discord.canal (nombre, id_servidor, id_mensaje) VALUES (%s, %s, %s);"""
+        values = (channel.nombre, channel.id_servidor, channel.id_mensaje)
 
         cursor.execute(insert_query, params=values)
         conn.commit()
@@ -36,12 +37,21 @@ class Channel:
         return channel_id
 
     #
+
+    @classmethod
+    def get_server_id_by_server_name(cls, channel):
+        query = """SELECT id_servidor FROM discord.servidores WHERE nombre = %s;"""
+        server_name = channel.server_name
+        params = (server_name,)
+        server_id = DatabaseConnection.fetch_one(query, params=params)
+        return str(server_id[0])
     
     @classmethod
     def create_channell(cls, channel):
-        query = """INSERT INTO discord.canal (nombre, id_servidor, id_mensaje, id_usuario) VALUES (%s, %s, %s, %s)"""
+        id_servidor = cls.get_server_id_by_server_name(channel)
 
-        params = (channel.nombre, channel.id_servidor, channel.id_mensaje, channel.id_usuario)
+        query = """INSERT INTO discord.canal (nombre, id_servidor, id_mensaje) VALUES (%s, %s, %s)"""
+        params = (channel.nombre, int(id_servidor), channel.id_mensaje)
 
         response = DatabaseConnection.execute_query(query, params=params)
 
@@ -66,12 +76,13 @@ class Channel:
 
 # PRUEBA de obtencion de canales a traves de un endopoint con parametros tratando de que esos se concatenen en la url desde JS para que asi no haya que hacer un JSON
 
+    
 
 #trato de obtener los canales del servidor que presione recien, tengo que ver en JS si puedo obtener el nombre presionado y con eso ya llamo al metodo este que lo busca a traves del nombre
     @classmethod
-    def get_channels_by_server_name(cls, server_id):
+    def get_channels_by_server_name(cls, server_name):
         select_query = """SELECT CAN.nombre FROM discord.canal AS CAN INNER JOIN discord.servidores AS SERV WHERE SERV.nombre = %s;"""
-        params = (server_id,)
+        params = (server_name,)
         response = DatabaseConnection.fetch_all(select_query, params=params)
         # channels = cursor.fetchall()
 

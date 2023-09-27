@@ -7,6 +7,7 @@ from .routes.login_bp import login_bp
 from .routes.signup_bp import signup_bp
 from .routes.server_bp import server_bp
 from .routes.channel_bp import channel_bp
+from .routes.usuario_bp import usuario_bp
 
 from .database import DatabaseConnection
 
@@ -37,5 +38,7 @@ def init_app():
     app.register_blueprint(server_bp, url_prefix='/server')
 
     app.register_blueprint(channel_bp, url_prefix='/channels')
+
+    app.register_blueprint(usuario_bp, url_prefix='/usuarios')
 
     return app

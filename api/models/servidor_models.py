@@ -7,7 +7,7 @@ class Server:
     def __init__(self, **kwargs):
         self.server_id = kwargs.get('server_id')
         self.name = kwargs.get('nombre', None)
-        self.description = kwargs.get('descripcion', None)
+        #self.description = kwargs.get('descripcion', None)
         self.owner_id = kwargs.get('owner_id')  # ID del usuario que creó el servidor
         self.members = []  # Lista de usuarios miembros del servidor
         self.channels = []  # Lista de canales en el servidor
@@ -17,10 +17,10 @@ class Server:
         server_dict = {
             'server_id': self.server_id,
             'name': self.name,
-            'description': self.description,
+            #'description': self.description,
             'owner_id': self.owner_id,
-            'members': [member.serialize() for member in self.members],  # Serializar usuarios miembros
-            'channels': [channel.serialize() for channel in self.channels],  # Serializar canales
+            #'members': [member.serialize() for member in self.members],  # Serializar usuarios miembros
+            #'channels': [channel.serialize() for channel in self.channels],  # Serializar canales
         }
         return server_dict
 
@@ -32,8 +32,8 @@ class Server:
         try:
             cursor = conn.cursor()
 
-            insert_query = """INSERT INTO discord.servidores (nombre, descripcion, id_canal, fecha_creacion, ruta_img_serv) VALUES (%s, %s, 4, NOW(), 'ruta-imagen-serv');"""
-            values = (server.name, server.description)
+            insert_query = """INSERT INTO discord.servidores (nombre, fecha_creacion, ruta_img_serv) VALUES (%s, NOW(), 'ruta-imagen-serv');"""
+            values = (server.name,)
 
             cursor.execute(insert_query, params=values)
             conn.commit()
@@ -44,14 +44,19 @@ class Server:
 
             cursor = conn.cursor()
 
-            query = """INSERT INTO discord.creador (id_usuario, id_servidor) VALUES (%s, %s);"""
+            usu_serv_query = """INSERT INTO discod.usuarios_servidores (id_usuario, id_servidor) VALUES (%s, %s);"""
             id_usuario = session.get('id_usuario', None)
             params = (id_usuario, server_id)
-            DatabaseConnection.execute_query(query, params=params)
+            DatabaseConnection.execute_query(usu_serv_query, params=params)
 
-            query = """SELECT id_creador FROM discord.creador WHERE id_servidor = %s;"""
+            creator_insert_query = """INSERT INTO discord.creador (id_usuario, id_servidor) VALUES (%s, %s);"""
+            #id_usuario = session.get('id_usuario', None)
+            params = (id_usuario, server_id)
+            DatabaseConnection.execute_query(creator_insert_query, params=params)
+
+            creator_query = """SELECT id_creador FROM discord.creador WHERE id_servidor = %s;"""
             params = (server_id,)
-            creator_id = DatabaseConnection.fetch_one(query, params=params)
+            creator_id = DatabaseConnection.fetch_one(creator_query, params=params)
 
             update_query = """UPDATE discord.servidores SET id_creador = %s WHERE id_servidor = %s;"""
             params = (creator_id[0], server_id)

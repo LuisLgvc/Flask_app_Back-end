@@ -1,6 +1,6 @@
 from ..models.messages_models import Messages
 
-from flask import jsonify, request
+from flask import jsonify, request, session
 
 from datetime import datetime
 

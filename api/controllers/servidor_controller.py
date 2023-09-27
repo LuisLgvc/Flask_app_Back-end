@@ -7,8 +7,8 @@ class ServerController:
     def create_server(cls):
         data = request.json
         new_server = Server(
-            nombre=data.get('nombre'),
-            descripcion=data.get('descripcion')
+            nombre=data.get('nombre', None),
+            #descripcion=data.get('descripcion')
         )
 
         server_id = Server.create_server(new_server)
@@ -22,13 +22,12 @@ class ServerController:
     def get_servers(cls):
 
         id_usuario = session.get('id_usuario')
-
+        
         servers = Server.get_servers(id_usuario)
-        # if servers:
-        #     return jsonify([server.serialize() for server in servers]), 200
-        # else:
-        #     return jsonify({"message": "No se encontraron servidores"}), 404
-        return jsonify(servers), 200
+        if servers:
+            return jsonify(servers), 200
+        else:
+            return jsonify({"message": "No se encontraron servidores"}), 404
 
 
     @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/servidores/{server_id} METODO GET
