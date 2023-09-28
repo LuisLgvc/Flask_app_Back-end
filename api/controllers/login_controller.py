@@ -3,24 +3,29 @@ from ..models.login_models import Login
 from flask import jsonify, request, session
 
 
-class LoginController():
-
-    @classmethod # ENDPOINT de prueba para login http://127.0.0.1:5000/login
-    def login(cls):
+class LoginController:
+    @classmethod
+    def login(self):
         """Realiza el llamado al metodo para realizar el login"""
         data = request.json
         user = Login(
-            id_usuario=(0),
             email=data.get('email'),
-            password=data.get('password')
+            password=data.get('password'),
         )
         response = Login.login(user)
         if response:
-            return {"id_usuario": response}, 200
-        else:
-            return {"message": "Usuario o contraseña incorrectos"}, 401
+            session['id_usuario'] = response.id_usuario
+            session['usuario'] = response.usuario
+            session['email'] = response.email
+            session['password'] = response.password
+            return response.serialize(), 200
 
-    @classmethod # ENDPOINT de prueba para http://127.0.0.1:5000/login/logout
+        return {"message": "Usuario o contraseña incorrectos"}, 401
+
+    @classmethod  # ENDPOINT de prueba para http://127.0.0.1:5000/login/logout
     def logout(cls):
-        session.pop('username', None)
+        session.pop('id_usuario', None)
+        session.pop('usuario', None)
+        session.pop('email', None)
+        session.pop('password', None)
         return {"message": "Sesion cerrada"}, 200

@@ -1,33 +1,39 @@
-from flask import jsonify, request
+from flask import jsonify, request, session
 from ..models.channel_models import Channel
 
 class ChannelController:
 
     @classmethod #Endpoint de prueba http://127.0.0.1:5000/api/canales METODO POST
     def create_channel(cls):
+        
+        session['nombre_servidor'] = request.args.get('nombre_servidor', None)
+        
         data = request.json
 
         channel = Channel(
             nombre=data.get('nombre', None),
             id_servidor=data.get('id_servidor', None),
             id_mensaje=data.get('id_mensaje', None),
-            id_usuario=data.get('id_usuario', None)
-        )
+            nombre_servidor=session.get('nombre_servidor', None)
+        )      
 
-        channel_id = Channel.create_channell(channel)
+        channel_id = Channel.create_channel(channel)
         response_status = 201 if channel_id else 500
+        
 
         return jsonify({"channel_id": "Exito"}), response_status
 
     @classmethod #Endpoint de prueba http://127.0.0.1:5000/api/canales/1 METODO GET Donde "1" es el ID del servidor del cual deseas obtener los canales.
     def get_channels_by_server(cls):
-
-        data = request.args.get('server_id', None)
-
+        data = request.args.get('nombre_servidor', None)
+        session['nombre_servidor'] = data
         channels = Channel.get_channels_by_server_name(data)
         response_status = 200 if channels else 404
-
         return channels, response_status
+
+
+
+
 
     @classmethod #Endpoint de prueba http://127.0.0.1:5000/api/canales/2 METODO GET Donde "2" es el ID del canal que deseas obtener.
     def get_channel_by_id(cls, channel_id):

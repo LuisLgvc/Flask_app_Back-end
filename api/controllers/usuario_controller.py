@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from ..models import Usuario
+from ..models.usuario_models import Usuario
 
 class UsuarioController:
     
@@ -7,14 +7,16 @@ class UsuarioController:
     def crear_usuario(cls):
         data = request.json
         nuevo_usuario = Usuario(
-            username=data.get('username'),
-            password=data.get('password'),
-            email=data.get('email'),
-            first_name=data.get('first_name'),
-            last_name=data.get('last_name'),
-            date_of_birth=data.get('date_of_birth'),
-            avatar_url=data.get('avatar_url')
+            username=data.get('usuario', None),
+            password=data.get('contraseña', None),
+            email=data.get('email', None),
+            first_name=data.get('nombre', None),
+            last_name=data.get('apellido', None),
+            date_of_birth=data.get('fecha_nac', None),
+            avatar_url=data.get('ruta_img_usu', None)
         )
+
+        print(username)
 
         user_id = Usuario.crear_usuario(nuevo_usuario)
 
