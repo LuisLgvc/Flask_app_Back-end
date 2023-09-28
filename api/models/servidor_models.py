@@ -4,25 +4,32 @@ from ..database import DatabaseConnection
 from flask import session
 
 class Server:
+    _keys = ['id_servidor', 'nombre', 'id_creador', 'fecha_creacion', 'ruta_img_serv']
+
     def __init__(self, **kwargs):
-        self.server_id = kwargs.get('server_id')
-        self.name = kwargs.get('nombre', None)
+        self.id_servidor = kwargs.get('id_servidor', None)
+        self.nombre = kwargs.get('nombre', None)
+        self.id_usuario = kwargs.get('id_usuario', None)
         #self.description = kwargs.get('descripcion', None)
-        self.owner_id = kwargs.get('owner_id')  # ID del usuario que creó el servidor
-        self.members = []  # Lista de usuarios miembros del servidor
-        self.channels = []  # Lista de canales en el servidor
+        self.id_creador = kwargs.get('id_creador', None)  # ID del usuario que creó el servidor
+        self.fecha_creacion = kwargs.get('fecha_creacion', None)
+        self.ruta_img_serv = kwargs.get('ruta_img_serv', None)
+        # self.members = []  # Lista de usuarios miembros del servidor
+        # self.channels = []  # Lista de canales en el servidor
 
     def serialize(self):
         # Método para serializar el objeto del servidor a un diccionario
-        server_dict = {
-            'server_id': self.server_id,
-            'name': self.name,
+        return {
+            'id_servidor': self.id_servidor,
+            'nombre': self.nombre,
             #'description': self.description,
-            'owner_id': self.owner_id,
+            'id_creador': self.id_creador,
+            'fecha_creacion': self.fecha_creacion,
+            'ruta_img_serv': self.ruta_img_serv,
             #'members': [member.serialize() for member in self.members],  # Serializar usuarios miembros
             #'channels': [channel.serialize() for channel in self.channels],  # Serializar canales
         }
-        return server_dict
+
 
 #Logica de Servidor
 #Creacion de un nuevo Servidor 
@@ -33,18 +40,18 @@ class Server:
             cursor = conn.cursor()
 
             insert_query = """INSERT INTO discord.servidores (nombre, fecha_creacion, ruta_img_serv) VALUES (%s, NOW(), 'ruta-imagen-serv');"""
-            values = (server.name,)
+            values = (server.nombre,)
 
             cursor.execute(insert_query, params=values)
             conn.commit()
 
-            nombre_servidor = server.name
+            nombre_servidor = server.nombre
             server_id = cursor.lastrowid
             cursor.close()
 
             cursor = conn.cursor()
 
-            usu_serv_query = """INSERT INTO discod.usuarios_servidores (id_usuario, id_servidor) VALUES (%s, %s);"""
+            usu_serv_query = """INSERT INTO discord.usuarios_servidores (id_usuario, id_servidor) VALUES (%s, %s);"""
             id_usuario = session.get('id_usuario', None)
             params = (id_usuario, server_id)
             DatabaseConnection.execute_query(usu_serv_query, params=params)
@@ -74,9 +81,11 @@ class Server:
         params = (id_usuario,)
         servers = DatabaseConnection.fetch_all(query, params=params)
 
-        all_servers = [dict(servidor=server[0]) for server in servers]
+        # return cls(**dict(zip(cls._keys, response)))
+        #all_servers = [dict(servidor=server[0]) for server in servers]
 
-        return all_servers
+        # return all_servers
+        return servers
 
     def get_servers_without_id(cls):
         query = ("""SELECT SERV.nombre FROM discord.servidores AS SERV;""")

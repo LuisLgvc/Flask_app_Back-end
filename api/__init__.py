@@ -17,15 +17,9 @@ def init_app():
     app = Flask(__name__, static_folder = Config.STATIC_FOLDER, template_folder = Config.TEMPLATE_FOLDER)
     
     CORS(app, supports_credentials=True)
+    #CORS(app, resources={r"/login": {"origins": "http://127.0.0.1:5501"}}, supports_credentials=True)
 
-    #CORS(app, resources={r"/*": {"origins": "*"}})
-
-    #CORS(app, resources={r"/server/*": {"origins": "http://127.0.0.1:5500"}})
-
-
-    app.config.from_object(
-        Config
-    )
+    app.config.from_object(Config)
 
     DatabaseConnection.set_config(app.config)
 

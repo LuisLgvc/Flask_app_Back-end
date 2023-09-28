@@ -18,8 +18,8 @@ class SignUpController:
             date_of_birth=data.get('fecha_nac'),
             route_img=data.get('ruta_img_usu')
         )
-
-        if SignUp.signup(user):
-            return {"message": "Registro exitoso"}, 200
+        response = SignUp.signup(user)
+        if response:
+            return response.serialize(), 200
         else:
             return {"message": "ha ocurrido un error"}, 401

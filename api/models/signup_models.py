@@ -13,6 +13,17 @@ class SignUp:
         self.date_of_birth = kwargs.get('date_of_birth', None)
         self.route_img = kwargs.get('route_img', None)
 
+    def serialize(self):
+        return {
+            'name': self.name,
+            'lastname': self.lastname,
+            'username': self.username,
+            'email': self.email,
+            'password': self.password,
+            'date_of_birth': self.date_of_birth,
+            'route_img': self.route_img,
+        }
+
     @classmethod
     def signup(cls, user):
         query = """INSERT INTO discord.usuarios (nombre, apellido, usuario, email, contraseña, fecha_nac, ruta_img_usu) VALUES (%(name)s, %(lastname)s, %(username)s, %(email)s, %(password)s, %(date_of_birth)s, %(route_img)s);"""

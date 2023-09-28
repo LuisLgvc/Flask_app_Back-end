@@ -3,15 +3,17 @@ from ..database import DatabaseConnection
 from flask import jsonify, session
 from datetime import datetime
 
+
 class Messages:
-    def __init__(self, id_mensaje = None, id_usuario = None, contenido = None, fecha_hora = None, id_canal = None):
+    def __init__(self, id_mensaje = None, id_usuario = None, contenido = None, fecha_hora = None, id_canal = None, nombre_canal = None):
         self.id_mensaje = id_mensaje
         self.id_usuario = id_usuario
         self.contenido = contenido
         self.fecha_hora = fecha_hora
         # self.fecha = fecha
         # self.hora = hora
-        self.id_canal = id_canal    
+        self.id_canal = id_canal
+        self.nombre_canal = nombre_canal
 
     def formatted_response(self):
         return {
@@ -25,10 +27,25 @@ class Messages:
         }
 
     @classmethod
+    def get_channel_id_by_name(cls, nombre_canal):
+        query = """SELECT CAN.id_canal FROM discord.canal AS CAN WHERE CAN.nombre = %s;"""
+        params = (nombre_canal,)
+        response = DatabaseConnection.fetch_one(query, params=params)
+        if response is not None:
+            return response[0]
+        return None
+
+    @classmethod
+    def create_message(cls, message):
+        query = """INSERT INTO discord.mensajes (contenido, id_usuario, fecha_hora, id_canal) VALUES (%s, %s, CURTIME(), %s);"""
+        id_canal = cls.get_channel_id_by_name(message.nombre_canal)
+        params = (message.contenido, message.id_usuario, id_canal)
+        DatabaseConnection.execute_query(query, params=params)
+
+    @classmethod
     def get_messages(cls, messages):
-        query = """SELECT MSG.id_mensaje, MSG.id_usuario, MSG.contenido, DATE_FORMAT(MSG.fecha_hora, '%d-%m-%Y %H:%i:%s'), MSG.id_canal FROM discord.mensajes AS MSG INNER JOIN discord.canal AS CAN ON MSG.id_canal = CAN.id_canal WHERE CAN.nombre = %s;"""
-        params = (messages.id_canal,)
-        print(params)
+        query = """SELECT MSG.id_mensaje, MSG.id_usuario, MSG.contenido, DATE_FORMAT(MSG.fecha_hora, '%d-%m-%Y %H:%i'), MSG.id_canal FROM discord.mensajes AS MSG INNER JOIN discord.canal AS CAN ON MSG.id_canal = CAN.id_canal WHERE CAN.nombre = %s;"""
+        params = (messages.nombre_canal,)
         responses = DatabaseConnection.fetch_all(query, params=params)
         all_messages = []
 
@@ -37,13 +54,6 @@ class Messages:
                 all_messages.append(cls(*response))
             return all_messages
         return None
-
-    @classmethod
-    def create_message(cls, message):
-        query = """INSERT INTO discord.mensajes (contenido, id_usuario, fecha_hora, id_canal) VALUES (%s, %s, CURTIME(), %s);"""
-        #id_canal = cls.get_channel_id_by_name(nombre_canal)
-        params = (message.contenido, id_usuario, id_canal)
-        DatabaseConnection.execute_query(query, params=params)
 
     @classmethod
     def update_message(cls, id_mensaje, message):
@@ -59,4 +69,3 @@ class Messages:
         params = (id_mensaje,)
 
         DatabaseConnection.execute_query(query, params=params)
-
