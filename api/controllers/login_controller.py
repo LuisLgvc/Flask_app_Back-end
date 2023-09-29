@@ -22,7 +22,7 @@ class LoginController:
 
         return {"message": "Usuario o contraseña incorrectos"}, 401
 
-    @classmethod  # ENDPOINT de prueba para http://127.0.0.1:5000/login/logout
+    @classmethod  
     def logout(cls):
         session.pop('id_usuario', None)
         session.pop('usuario', None)

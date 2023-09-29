@@ -3,7 +3,7 @@ from ..models.channel_models import Channel
 
 class ChannelController:
 
-    @classmethod #Endpoint de prueba http://127.0.0.1:5000/api/canales METODO POST
+    @classmethod 
     def create_channel(cls):
         
         session['nombre_servidor'] = request.args.get('nombre_servidor', None)
@@ -12,9 +12,8 @@ class ChannelController:
 
         channel = Channel(
             nombre=data.get('nombre', None),
-            id_servidor=data.get('id_servidor', None),
             id_mensaje=data.get('id_mensaje', None),
-            nombre_servidor=session.get('nombre_servidor', None)
+            nombre_servidor=data.get('nombre_servidor', None)
         )      
 
         channel_id = Channel.create_channel(channel)
@@ -23,11 +22,13 @@ class ChannelController:
 
         return jsonify({"channel_id": "Exito"}), response_status
 
-    @classmethod #Endpoint de prueba http://127.0.0.1:5000/api/canales/1 METODO GET Donde "1" es el ID del servidor del cual deseas obtener los canales.
-    def get_channels_by_server(cls):
-        data = request.args.get('nombre_servidor', None)
-        session['nombre_servidor'] = data
-        channels = Channel.get_channels_by_server_name(data)
+    @classmethod 
+    def get_channels_by_server(cls, nombre_servidor):
+        # print(nombre_servidor)
+        session['nombre_servidor'] = nombre_servidor
+
+        channels = Channel.get_channels_by_server_name(nombre_servidor)
+        
         response_status = 200 if channels else 404
         return channels, response_status
 

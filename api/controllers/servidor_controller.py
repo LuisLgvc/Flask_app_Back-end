@@ -3,13 +3,12 @@ from ..models.servidor_models import Server
 
 class ServerController:
     
-    @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/servidores METODO POST
+    @classmethod 
     def create_server(cls):
         data = request.json
         new_server = Server(
             nombre=data.get('nombre', None),
-            id_usuario=session.get('id_usuario'),
-            #descripcion=data.get('descripcion')
+            id_usuario=data.get('id_usuario', None),
         )
 
         server_id = Server.create_server(new_server)
@@ -19,9 +18,8 @@ class ServerController:
         else:
             return jsonify({"message": "Error al crear el servidor"}), 500
 
-    @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/servidores METODO GET
+    @classmethod 
     def get_servers(cls, id_usuario):
-        #id_usuario = session.get('id_usuario')
         
         servers = Server.get_servers(id_usuario)
 
@@ -31,7 +29,7 @@ class ServerController:
             return jsonify({"message": "No se encontraron servidores"}), 404
 
 
-    @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/servidores/{server_id} METODO GET
+    @classmethod 
     def get_server_by_id(cls):
         server = Server.get_servers_without_id(cls)
         if server:
@@ -46,18 +44,3 @@ class ServerController:
             return server, 200
         else:
             return jsonify({"message": "Servidor no encontrado"}), 404
-
-    # @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/servidores/{server_id} METODO PUT
-    # def update_server(cls, server_id):
-    #     data = request.json
-    #     if Server.update_server(server_id, data):
-    #         return jsonify({"message": "Servidor actualizado exitosamente"}), 200
-    #     else:
-    #         return jsonify({"message": "Error al actualizar el servidor"}), 500
-
-    # @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/servidores/{server_id} METODO DELETE
-    # def delete_server(cls, server_id):
-    #     if Server.delete_server(server_id):
-    #         return jsonify({"message": "Servidor eliminado exitosamente"}), 200
-    #     else:
-    #         return jsonify({"message": "Error al eliminar el servidor"}), 500
