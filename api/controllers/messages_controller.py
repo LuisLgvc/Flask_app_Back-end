@@ -9,14 +9,12 @@ class MessagesController:
 
     @classmethod
     def create_message(cls):
-        nombre_canal=request.args.get('nombre_canal', None)
-
         data = request.json
 
         message = Messages(
-            nombre_canal=nombre_canal,
+            nombre_canal=data.get('nombre_canal', None),
             contenido=data.get('contenido', None),
-            id_usuario=session.get('id_usuario'),
+            id_usuario=data.get('id_usuario', None),
         )
         
         Messages.create_message(message)
@@ -24,9 +22,8 @@ class MessagesController:
         return response, 200
 
     @classmethod
-    def get_messages(cls):
+    def get_messages(cls, nombre_canal):
         """Get all chanel messages"""
-        nombre_canal=request.args.get('nombre_canal', None)
         
         messages = Messages(
             nombre_canal=nombre_canal
@@ -42,8 +39,6 @@ class MessagesController:
     @classmethod
     def update_message(cls, id_message):
         data = request.json
-
-        #data['id_message'] = id_message
 
         message = Messages(**data)
         

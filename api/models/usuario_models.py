@@ -37,8 +37,6 @@ class Usuario:
         insert_query = """INSERT INTO discord.usuarios (nombre, apellido, usuario, email, contraseña, fecha_nac, ruta_img_usu) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
 
         values = (usuario.first_name, usuario.last_name, usuario.username, usuario.email, usuario.password, usuario.date_of_birth, usuario.avatar_url)
-        
-        print(values)
 
         cursor.execute(insert_query, params=values)
         conn.commit()

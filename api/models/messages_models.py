@@ -10,19 +10,15 @@ class Messages:
         self.id_usuario = id_usuario
         self.contenido = contenido
         self.fecha_hora = fecha_hora
-        # self.fecha = fecha
-        # self.hora = hora
         self.id_canal = id_canal
         self.nombre_canal = nombre_canal
 
     def formatted_response(self):
         return {
             'id_mensaje': int(self.id_mensaje),
-            'id_usuario': str(self.id_usuario),
+            'usuario': str(self.id_usuario),
             'contenido': str(self.contenido),
             'fecha_hora': str(self.fecha_hora),
-            # 'fecha': str(self.fecha),
-            # 'hora': str(self.hora),
             'id_canal': int(self.id_canal),
         }
 
@@ -44,7 +40,7 @@ class Messages:
 
     @classmethod
     def get_messages(cls, messages):
-        query = """SELECT MSG.id_mensaje, MSG.id_usuario, MSG.contenido, DATE_FORMAT(MSG.fecha_hora, '%d-%m-%Y %H:%i'), MSG.id_canal FROM discord.mensajes AS MSG INNER JOIN discord.canal AS CAN ON MSG.id_canal = CAN.id_canal WHERE CAN.nombre = %s;"""
+        query = """SELECT MSG.id_mensaje, USU.usuario, MSG.contenido, DATE_FORMAT(MSG.fecha_hora, '%d-%m-%Y %H:%i'), MSG.id_canal FROM discord.mensajes AS MSG INNER JOIN discord.canal AS CAN ON MSG.id_canal = CAN.id_canal INNER JOIN discord.usuarios AS USU ON MSG.id_usuario = USU.id_usuario WHERE CAN.nombre = %s;"""
         params = (messages.nombre_canal,)
         responses = DatabaseConnection.fetch_all(query, params=params)
         all_messages = []

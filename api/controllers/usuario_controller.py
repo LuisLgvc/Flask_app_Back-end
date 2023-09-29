@@ -3,7 +3,7 @@ from ..models.usuario_models import Usuario
 
 class UsuarioController:
     
-    @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/usuarios METODO POST
+    @classmethod 
     def crear_usuario(cls):
         data = request.json
         nuevo_usuario = Usuario(
@@ -25,7 +25,7 @@ class UsuarioController:
         else:
             return jsonify({"message": "Error al crear el usuario"}), 500
 
-    @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/usuarios METODO GET
+    @classmethod 
     def get_usuarios(cls):
         usuarios = Usuario.obtener_usuarios()
         if usuarios:
@@ -33,7 +33,7 @@ class UsuarioController:
         else:
             return jsonify({"message": "No se encontraron usuarios"}), 404
     
-    @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/usuarios/1 METODO GET
+    @classmethod 
     def obtener_usuario_por_id(cls, user_id):
         usuario = Usuario.obtener_usuario_por_id(user_id)
         if usuario:
@@ -41,7 +41,7 @@ class UsuarioController:
         else:
             return jsonify({"message": "Usuario no encontrado"}), 404
 
-    @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/usuarios/1 METODO PUT
+    @classmethod 
     def actualizar_usuario(cls, user_id):
         data = request.json
         if Usuario.actualizar_usuario(user_id, data):
@@ -49,7 +49,7 @@ class UsuarioController:
         else:
             return jsonify({"message": "Error al actualizar el usuario"}), 500
 
-    @classmethod #Endpoint de Prueba http://127.0.0.1:5000/api/usuarios/1 METODO DELETE
+    @classmethod 
     def eliminar_usuario(cls, user_id):
         if Usuario.eliminar_usuario(user_id):
             return jsonify({"message": "Usuario eliminado exitosamente"}), 200
